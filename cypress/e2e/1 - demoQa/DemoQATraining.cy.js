@@ -2,12 +2,16 @@
 
 import DemoQA from "../PageObject/DemoQAPOM/DemoQa";
 import FormsDemoQA from "../PageObject/DemoQAPOM/Forms - demoQa";
+import ListDemoQA from "../PageObject/DemoQAPOM/List - demoQa";
+import TableDemoQA from "../PageObject/DemoQAPOM/Table - demoQa";
 import UtilitiesDemoQA from "../PageObject/DemoQAPOM/Utilities - demoQa";
 
 describe('DemoQA Tools', () => {
   const siteDemoQA = new DemoQA();
-  const utilitiesDemoQA = new UtilitiesDemoQA
+  const utilitiesDemoQA = new UtilitiesDemoQA();
   const formsDemoQA = new FormsDemoQA();
+  const listDemoQA = new ListDemoQA();
+  const tableDemoQA = new TableDemoQA();
 
   Cypress.on('uncaught:exception', (e, runnable) => {
     // returning false here prevents Cypress from
@@ -63,7 +67,7 @@ describe('DemoQA Tools', () => {
 
     siteDemoQA.acessButtonCard("Interactions")
     siteDemoQA.acessLeftPanel("Selectable")
-    utilitiesDemoQA.clickOnByText(myLocator, 
+    listDemoQA.clickOnByText(myLocator, 
       myRepeatableElement, listText)
   })
 
@@ -75,7 +79,7 @@ describe('DemoQA Tools', () => {
 
     siteDemoQA.acessButtonCard("Interactions")
     siteDemoQA.acessLeftPanel("Selectable")
-    utilitiesDemoQA.clickOnByPosition(myLocator, 
+    listDemoQA.clickOnByPosition(myLocator, 
       myRepeatableElement, listPosition)
   })
 
@@ -91,7 +95,7 @@ describe('DemoQA Tools', () => {
     siteDemoQA.acessButtonCard("Interactions")
     siteDemoQA.acessLeftPanel("Selectable")
     utilitiesDemoQA.clickOnLocator(locatorGrid)
-    utilitiesDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
+    tableDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
   })
 
   it('WebTables', () => {
@@ -104,7 +108,7 @@ describe('DemoQA Tools', () => {
 
     siteDemoQA.acessButtonCard("Elements")
     siteDemoQA.acessLeftPanel("Web Tables")
-    utilitiesDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
+    tableDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
   })
 
 })
