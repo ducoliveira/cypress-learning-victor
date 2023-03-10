@@ -1,0 +1,6 @@
+{
+    "listLocator": ".tab-content ul",
+    "repeatableElement": "li",
+    "listContent": "Morbi leo risus",
+    "listPosition": 2
+  }

@@ -1,0 +1,16 @@
+{
+    "FirstName": "Luan",
+    "LastName": "Almeida",
+    "UserEmail": "luan_almeida@gmail.com",
+    "Gender": "Male",
+    "Phone": "4799909900",
+    "dayDOB": "10",
+    "monthDOB": "February",
+    "yearDOB": "1955",
+    "Subject1": "Computer Science",
+    "Hobbie1": "Reading",
+    "imageTest": "testPassed.jpg",
+    "Address": "Rua Alexandre Dávila Baptista 633",
+    "State": "Haryana",
+    "City": "Panipat"
+  }

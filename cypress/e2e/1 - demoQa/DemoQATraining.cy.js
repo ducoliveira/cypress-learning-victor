@@ -1,13 +1,11 @@
 /// <reference types="cypress" />
 
-import DemoQA from "../PageObject/DemoQAPOM/DemoQa";
 import FormsDemoQA from "../PageObject/DemoQAPOM/Forms - demoQa";
 import ListDemoQA from "../PageObject/DemoQAPOM/List - demoQa";
 import TableDemoQA from "../PageObject/DemoQAPOM/Table - demoQa";
 import UtilitiesDemoQA from "../PageObject/DemoQAPOM/Utilities - demoQa";
 
 describe('DemoQA Tools', () => {
-  const siteDemoQA = new DemoQA();
   const utilitiesDemoQA = new UtilitiesDemoQA();
   const formsDemoQA = new FormsDemoQA();
   const listDemoQA = new ListDemoQA();
@@ -23,64 +21,70 @@ describe('DemoQA Tools', () => {
   })
 
   beforeEach('settings', () => {
-    siteDemoQA.navigate();
+    utilitiesDemoQA.navigate();
   })
 
   it('Registration Form', () => {
-    // Data
-    const FirstName = "Luan";
-    const LastName = "Almeida";
-    const UserEmail = "luan_almeida@gmail.com";
-    const Gender = "Male";
-    const Phone = "4799909900";
-    const dayDOB = "10";
-    const monthDOB = "February";
-    const yearDOB = "1955";
-    const Subject1 = "Computer Science";
-    const Hobbie1 = "Reading";
-    const imageTest = 'testPassed.jpg';
-    const Adress = "Rua Alexandre Dávila Baptista 633";
-    const State = "Haryana";
-    const City = "Panipat";
+    cy.fixture('userRegister').then((userRegister) => {
+      // Data
+      const FirstName = userRegister.FirstName
+      const LastName = userRegister.LastName
+      const UserEmail = userRegister.UserEmail
+      const Gender = userRegister.Gender
+      const Phone = userRegister.Phone
+      const dayDOB = userRegister.dayDOB
+      const monthDOB = userRegister.monthDOB
+      const yearDOB = userRegister.yearDOB
+      const Subject1 = userRegister.Subject1
+      const Hobbie1 = userRegister.Hobbie1
+      const imageTest = userRegister.imageTest
+      const Address = userRegister.Address
+      const State = userRegister.State
+      const City = userRegister.City
 
-    siteDemoQA.acessButtonCard("Forms")
-    siteDemoQA.acessLeftPanel("Practice Form")
-    formsDemoQA.fillFirstName(FirstName)
-    formsDemoQA.fillLastName(LastName)
-    formsDemoQA.filluserEmail(UserEmail)
-    formsDemoQA.fillGender(Gender)
-    formsDemoQA.fillPhone(Phone)
-    formsDemoQA.fillBirthday(dayDOB, monthDOB, yearDOB)
-    formsDemoQA.fillSubjects(Subject1)
-    formsDemoQA.fillHobbies(Hobbie1)
-    utilitiesDemoQA.uploadPicture(imageTest)
-    formsDemoQA.fillAddress(Adress)
-    formsDemoQA.fillStateAndCity(State, City)
-    formsDemoQA.submitForm()
+      utilitiesDemoQA.acessButtonCard("Forms")
+      utilitiesDemoQA.acessLeftPanel("Practice Form")
+      formsDemoQA.fillFirstName(FirstName)
+      formsDemoQA.fillLastName(LastName)
+      formsDemoQA.filluserEmail(UserEmail)
+      formsDemoQA.fillGender(Gender)
+      formsDemoQA.fillPhone(Phone)
+      formsDemoQA.fillBirthday(dayDOB, monthDOB, yearDOB)
+      formsDemoQA.fillSubjects(Subject1)
+      formsDemoQA.fillHobbies(Hobbie1)
+      utilitiesDemoQA.uploadPicture(imageTest)
+      formsDemoQA.fillAddress(Address)
+      formsDemoQA.fillStateAndCity(State, City)
+      formsDemoQA.submitForm()
+    })
   })
 
   it('Iteractions Form List via Text', () => {
-    // Data
-    const myLocator = '.tab-content ul';
-    const myRepeatableElement = 'li';
-    const listText = "Morbi leo risus";
+    cy.fixture('list').then((list) => {
+      // Data
+      const listLocator = list.listLocator;
+      const repeatableElement = list.repeatableElement;
+      const listContent = list.listContent;
 
-    siteDemoQA.acessButtonCard("Interactions")
-    siteDemoQA.acessLeftPanel("Selectable")
-    listDemoQA.clickOnByText(myLocator, 
-      myRepeatableElement, listText)
+      utilitiesDemoQA.acessButtonCard("Interactions")
+      utilitiesDemoQA.acessLeftPanel("Selectable")
+      listDemoQA.clickOnByText(listLocator, 
+        repeatableElement, listContent)
+    })
   })
 
   it('Iteractions Form via List Position', () => {
-    // Data
-    const myLocator = '.tab-content ul';
-    const myRepeatableElement = 'li';
-    const listPosition = 2;
+    cy.fixture('list').then((list) => {
+      // Data
+      const listLocator = list.listLocator;
+      const repeatableElement = list.repeatableElement;
+      const listPosition = list.listPosition;
 
-    siteDemoQA.acessButtonCard("Interactions")
-    siteDemoQA.acessLeftPanel("Selectable")
-    listDemoQA.clickOnByPosition(myLocator, 
-      myRepeatableElement, listPosition)
+      utilitiesDemoQA.acessButtonCard("Interactions")
+      utilitiesDemoQA.acessLeftPanel("Selectable")
+      listDemoQA.clickOnByPosition(listLocator, 
+        repeatableElement, listPosition)
+    })
   })
 
   it('Interactions Form via Grid Text', () => {
@@ -93,8 +97,8 @@ describe('DemoQA Tools', () => {
       const wantedData = grid.wantedData
       const position = grid.position
 
-      siteDemoQA.acessButtonCard("Interactions")
-      siteDemoQA.acessLeftPanel("Selectable")
+      utilitiesDemoQA.acessButtonCard("Interactions")
+      utilitiesDemoQA.acessLeftPanel("Selectable")
       utilitiesDemoQA.clickOnLocator(gridLocator)
       tableDemoQA.clickOnTable(tableLocator, rowLocator, rowElementLocator, position, wantedData)
     })
@@ -110,8 +114,8 @@ describe('DemoQA Tools', () => {
       const wantedData = webtable.wantedData
       const position = webtable.position
 
-      siteDemoQA.acessButtonCard("Elements")
-      siteDemoQA.acessLeftPanel("Web Tables")
+      utilitiesDemoQA.acessButtonCard("Elements")
+      utilitiesDemoQA.acessLeftPanel("Web Tables")
       tableDemoQA.clickOnTable(tableLocator, rowLocator, rowElementLocator, position, wantedData)
     })
   })
