@@ -1,0 +1,7 @@
+{
+  "tableLocator": ".rt-table",
+  "rowLocator": ".rt-tr",
+  "rowElementLocator": ".rt-td",
+  "wantedData": "cierra@example.com",
+  "position": 4
+}

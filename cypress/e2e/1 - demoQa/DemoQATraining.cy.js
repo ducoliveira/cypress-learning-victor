@@ -84,31 +84,35 @@ describe('DemoQA Tools', () => {
   })
 
   it('Interactions Form via Grid Text', () => {
-    // Data
-    const locatorGrid = '#demo-tab-grid';
-    const locatorTabela = '.grid-container';
-    const locatorLinha = '.list-group-horizontal-sm'
-    const locatorElementoLinha = '.list-group-item'
-    const wantedData = 'Four';
-    const position = 1;
+    cy.fixture('grid').then((grid) => {
+      // Data
+      const gridLocator = grid.gridLocator
+      const tableLocator = grid.tableLocator
+      const rowLocator = grid.rowLocator
+      const rowElementLocator = grid.rowElementLocator
+      const wantedData = grid.wantedData
+      const position = grid.position
 
-    siteDemoQA.acessButtonCard("Interactions")
-    siteDemoQA.acessLeftPanel("Selectable")
-    utilitiesDemoQA.clickOnLocator(locatorGrid)
-    tableDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
+      siteDemoQA.acessButtonCard("Interactions")
+      siteDemoQA.acessLeftPanel("Selectable")
+      utilitiesDemoQA.clickOnLocator(gridLocator)
+      tableDemoQA.clickOnTable(tableLocator, rowLocator, rowElementLocator, position, wantedData)
+    })
   })
 
   it('WebTables', () => {
-    // Data
-    const locatorTabela = '.rt-table';
-    const locatorLinha = '.rt-tr';
-    const locatorElementoLinha = '.rt-td';
-    const wantedData = 'cierra@example.com';
-    const position = 4;
+    cy.fixture('webtable').then((webtable) => {
 
-    siteDemoQA.acessButtonCard("Elements")
-    siteDemoQA.acessLeftPanel("Web Tables")
-    tableDemoQA.clickOnTable(locatorTabela, locatorLinha, locatorElementoLinha, position, wantedData)
+      // Data
+      const tableLocator = webtable.tableLocator
+      const rowLocator = webtable.rowLocator
+      const rowElementLocator = webtable.rowElementLocator
+      const wantedData = webtable.wantedData
+      const position = webtable.position
+
+      siteDemoQA.acessButtonCard("Elements")
+      siteDemoQA.acessLeftPanel("Web Tables")
+      tableDemoQA.clickOnTable(tableLocator, rowLocator, rowElementLocator, position, wantedData)
+    })
   })
-
 })

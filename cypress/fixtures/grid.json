@@ -1,0 +1,9 @@
+{
+    "gridLocator": "#demo-tab-grid",
+    "tableLocator": ".grid-container",
+    "rowLocator": ".list-group-horizontal-sm",
+    "rowElementLocator": ".list-group-item",
+    "wantedData": "Four",
+    "position": 1
+  }
+  
