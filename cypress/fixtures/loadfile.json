@@ -1,0 +1,8 @@
+{
+  "downloadsPath": "cypress/downloads",
+  "allFiles": "/*",
+  "downloadButton": "#downloadButton",
+  "downloadedFile": "/sampleFile.jpeg",
+  "txtTest": "/test.txt",
+  "imageTest": "testPassed.jpg"
+}

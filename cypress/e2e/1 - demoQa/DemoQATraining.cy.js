@@ -2,6 +2,7 @@
 
 import FormsDemoQA from "../PageObject/DemoQAPOM/Forms - demoQa";
 import ListDemoQA from "../PageObject/DemoQAPOM/List - demoQa";
+import LoadsDemoQA from "../PageObject/DemoQAPOM/Loads - demoQa";
 import TableDemoQA from "../PageObject/DemoQAPOM/Table - demoQa";
 import UtilitiesDemoQA from "../PageObject/DemoQAPOM/Utilities - demoQa";
 
@@ -10,6 +11,7 @@ describe('DemoQA Tools', () => {
   const formsDemoQA = new FormsDemoQA();
   const listDemoQA = new ListDemoQA();
   const tableDemoQA = new TableDemoQA();
+  const loadsDemoQA = new LoadsDemoQA();
 
   Cypress.on('uncaught:exception', (e, runnable) => {
     // returning false here prevents Cypress from
@@ -20,8 +22,20 @@ describe('DemoQA Tools', () => {
     return false
   })
 
+  // Acess DemoQA website for test
   beforeEach('settings', () => {
     utilitiesDemoQA.navigate();
+  })
+
+  // Empty the directory after tests
+  afterEach(() => {
+    cy.fixture('loadfile').then((loadfile) => {
+      // Data
+      const downloadsPath = loadfile.downloadsPath
+      const allFiles = loadfile.allFiles
+
+      loadsDemoQA.emptyDownloadDir(downloadsPath, allFiles)
+    })
   })
 
   it('Registration Form', () => {
@@ -106,7 +120,6 @@ describe('DemoQA Tools', () => {
 
   it('WebTables', () => {
     cy.fixture('webtable').then((webtable) => {
-
       // Data
       const tableLocator = webtable.tableLocator
       const rowLocator = webtable.rowLocator
@@ -117,6 +130,44 @@ describe('DemoQA Tools', () => {
       utilitiesDemoQA.acessButtonCard("Elements")
       utilitiesDemoQA.acessLeftPanel("Web Tables")
       tableDemoQA.clickOnTable(tableLocator, rowLocator, rowElementLocator, position, wantedData)
+    })
+  })
+
+  it('Download SampleFile', () => {
+    cy.fixture('loadfile').then((loadfile) => {
+      // Data
+      const downloadButton = loadfile.downloadButton
+      const downloadsPath = loadfile.downloadsPath
+      const downloadedFile = loadfile.downloadedFile
+      const downloadedFilePath = downloadsPath+downloadedFile
+
+      utilitiesDemoQA.acessButtonCard("Elements")
+      utilitiesDemoQA.acessLeftPanel("Upload and Download")
+      loadsDemoQA.downloadFile(downloadButton, downloadedFilePath)
+    })
+  })
+
+  it('Creating and Editing a file', () => {
+    cy.fixture('loadfile').then((loadfile) => {
+      // Data
+      const downloadsPath = loadfile.downloadsPath
+      const createdFile = loadfile.txtTest
+      const createdFilePath = downloadsPath+createdFile
+
+      loadsDemoQA.writeFile(createdFilePath, 'Test passed!')
+    })
+  })
+
+  // Not a good validation, should be optimized
+  it('Upload file', () =>{
+    cy.fixture('loadfile').then((loadfile) => {
+      // Data
+      const imageTest = loadfile.imageTest
+
+      utilitiesDemoQA.acessButtonCard("Elements")
+      utilitiesDemoQA.acessLeftPanel("Upload and Download")
+      utilitiesDemoQA.uploadPicture(imageTest)
+      cy.get('#uploadedFilePath').should('be.visible')
     })
   })
 })
