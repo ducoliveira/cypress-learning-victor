@@ -1,9 +1,8 @@
 class UtilitiesDemoQA{
 
     // Acess DemoQA website and assert title
-    navigate(){
-        cy.visit('https://demoqa.com/')
-        cy.title().should('eq', 'DEMOQA')
+    navigate(page){
+        cy.visit(page)
     }
 
     // Select a card to acess
