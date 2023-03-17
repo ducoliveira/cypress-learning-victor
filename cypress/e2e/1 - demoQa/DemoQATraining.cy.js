@@ -24,7 +24,11 @@ describe('DemoQA Tools', () => {
 
   // Acess DemoQA website for test
   beforeEach('settings', () => {
-    utilitiesDemoQA.navigate();
+    cy.fixture('pages').then((pages) => {
+      const homepage = pages.homepage;
+
+      utilitiesDemoQA.navigate(homepage);
+    })
   })
 
   // Empty the directory after tests
@@ -46,6 +50,7 @@ describe('DemoQA Tools', () => {
       const UserEmail = userRegister.UserEmail
       const Gender = userRegister.Gender
       const Phone = userRegister.Phone
+      const datePickerDOB = userRegister.datePickerDOB
       const dayDOB = userRegister.dayDOB
       const monthDOB = userRegister.monthDOB
       const yearDOB = userRegister.yearDOB
@@ -63,7 +68,7 @@ describe('DemoQA Tools', () => {
       formsDemoQA.filluserEmail(UserEmail)
       formsDemoQA.fillGender(Gender)
       formsDemoQA.fillPhone(Phone)
-      formsDemoQA.fillBirthday(dayDOB, monthDOB, yearDOB)
+      formsDemoQA.fillDatePicker(datePickerDOB, dayDOB, monthDOB, yearDOB) // Birthday
       formsDemoQA.fillSubjects(Subject1)
       formsDemoQA.fillHobbies(Hobbie1)
       utilitiesDemoQA.uploadPicture(imageTest)
@@ -168,6 +173,20 @@ describe('DemoQA Tools', () => {
       utilitiesDemoQA.acessLeftPanel("Upload and Download")
       utilitiesDemoQA.uploadPicture(imageTest)
       cy.get('#uploadedFilePath').should('be.visible')
+    })
+  })
+
+  it('DatePicker test', () =>{
+    cy.fixture('userRegister').then((userRegister) => {
+      // Data
+      const datePicker = userRegister.datePickerTest
+      const dayDOB = userRegister.dayDOB
+      const monthDOB = userRegister.monthDOB
+      const yearDOB = userRegister.yearDOB
+      utilitiesDemoQA.acessButtonCard("Widgets")
+      utilitiesDemoQA.acessLeftPanel("Date Picker")
+
+      formsDemoQA.fillDatePicker(datePicker, dayDOB, monthDOB, yearDOB)
     })
   })
 })

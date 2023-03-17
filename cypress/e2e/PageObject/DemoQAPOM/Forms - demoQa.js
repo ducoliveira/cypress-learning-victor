@@ -20,9 +20,9 @@ class FormsDemoQA{
         cy.get('#userNumber').type(phoneNumber)
     }
 
-    fillBirthday(day, month, year){
+    fillDatePicker(datePickerID, day, month, year){
         // Open the dropdown datepicker
-        cy.get('#dateOfBirthInput').click()
+        cy.get(datePickerID).click()
 
         // Select year
         cy.get('.react-datepicker__year-select')
@@ -43,7 +43,7 @@ class FormsDemoQA{
         .click().wait(1000)
 
         // Close the dropdown datepicker
-        cy.get('#dateOfBirthInput').focus().type('{esc}')
+        cy.get(datePickerID).focus().type('{esc}')
     }
 
     fillSubjects(subject){
