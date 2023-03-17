@@ -31,7 +31,7 @@ describe('DemoQA Tools', () => {
     })
   })
 
-  // Logout after each test
+  // Delete all books on profile and logout after each test
   afterEach(() => {
     cy.fixture('bookAPP').then((bookAPP) => {
       const books = bookAPP.books
