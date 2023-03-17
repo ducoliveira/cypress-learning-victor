@@ -1,0 +1,12 @@
+{
+  "books": "https://demoqa.com/books",
+  "tableLocator": ".rt-table",
+  "rowLocator": ".rt-tr",
+  "rowElementLocator": ".rt-td",
+  "wantedBook1": "Speaking JavaScript",
+  "positionBook1": 2,
+  "wantedBook2": "Git Pocket Guide",
+  "positionBook2": 2,
+  "positionDelete": 5,
+  "submenuProfile": "Profile"
+}

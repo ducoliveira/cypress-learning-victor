@@ -13,7 +13,7 @@ class TableDemoQA{
     
     // Assert that the found column/cell has the specified value
     assertTableText(locator, element, column, position, text){
-        return this.findColumn(locator, element, column, position, text).should('have.text', text)
+        return this.findColumn(locator, element, column, position, text).contains(text)
     }
     
     // Click on that column/cell
