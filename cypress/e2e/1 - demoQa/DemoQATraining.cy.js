@@ -164,7 +164,7 @@ describe('DemoQA Tools', () => {
   })
 
   // Not a good validation, should be optimized
-  it('Upload file', () =>{
+  it('Upload file', () => {
     cy.fixture('loadfile').then((loadfile) => {
       // Data
       const imageTest = loadfile.imageTest
@@ -176,7 +176,7 @@ describe('DemoQA Tools', () => {
     })
   })
 
-  it('DatePicker test', () =>{
+  it('DatePicker test', () => {
     cy.fixture('userRegister').then((userRegister) => {
       // Data
       const datePicker = userRegister.datePickerTest
@@ -188,5 +188,47 @@ describe('DemoQA Tools', () => {
 
       formsDemoQA.fillDatePicker(datePicker, dayDOB, monthDOB, yearDOB)
     })
+  })
+
+  it('Alert Type Test', () => {
+    utilitiesDemoQA.acessButtonCard("Alerts, Frame & Windows")
+    utilitiesDemoQA.acessLeftPanel("Alerts")
+
+    // Stub declaration
+    const stub = cy.stub()
+    cy.on('window:alert', stub)
+
+    // Alert Button Test
+    cy.get('#alertButton')
+    .click()
+    .then(() => {
+      expect(stub.getCall(0)).to.be.calledWith('You clicked a button')
+    })
+    
+    // Timer alert Button Test
+    cy.get('#timerAlertButton')
+    .click().wait(5100)
+    .then(() => {
+      expect(stub.getCall(1)).to.be.calledWith('This alert appeared after 5 seconds')
+    })
+    
+    // Confirm Alert Button Test
+    cy.get('#confirmButton')
+    .click()
+    cy.on('window:confirm', () => true)
+    cy.get('#confirmResult').contains('You selected Ok')
+
+    // NAO CONSIGO USAR DOIS CONFIRM NO MESMO TESTE
+    // cy.get('#confirmButton')
+    // .click().wait(1000)
+    // cy.on('window:confirm', () => false)
+
+    // Prompt Alert Button Test
+    
+    cy.window().then(($janela) => {
+      cy.stub($janela, 'prompt').returns('Luan Almeida')
+      cy.get('#promtButton').click()
+    })
+    cy.get('#promptResult').contains('Luan Almeida')
   })
 })
