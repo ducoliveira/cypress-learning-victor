@@ -42,7 +42,7 @@ describe('DemoQA Tools', () => {
     })
   })
 
-  it('Registration Form', () => {
+  it('TC1 - Registration Form', () => {
     cy.fixture('userRegister').then((userRegister) => {
       // Data
       const FirstName = userRegister.FirstName
