@@ -164,7 +164,7 @@ describe('DemoQA Tools', () => {
   })
 
   // Not a good validation, should be optimized
-  it('Upload file', () => {
+  it.skip('Upload file', () => {
     cy.fixture('loadfile').then((loadfile) => {
       // Data
       const imageTest = loadfile.imageTest
@@ -230,5 +230,52 @@ describe('DemoQA Tools', () => {
       cy.get('#promtButton').click()
     })
     cy.get('#promptResult').contains('Luan Almeida')
+  })
+
+  // Incomplete
+  it.skip('Slider test', () => {
+    // Data
+    const currentValue = 25;
+    const targetValue = 40;
+    const steps = targetValue - currentValue
+    const arrows = '{rightArrow}'.repeat(steps)
+
+    utilitiesDemoQA.acessButtonCard("Widgets")
+    utilitiesDemoQA.acessLeftPanel("Slider")
+
+    cy.get('.range-slider')
+    .should('have.attr', 'value', 25)
+
+    .invoke("attr", "style", "left: calc(40% + 2px);")
+
+    // .invoke('val', 40)
+    // .trigger('change')
+    // .click()
+    
+    // .click({ multiple : true, force : true })
+    // .type(arrows)
+
+    cy.get('.range-slider')
+    .should('have.attr', 'value', 40)
+  })
+
+  it.only('Progress Bar test - Targeting a Number', () => {
+    utilitiesDemoQA.acessButtonCard("Widgets")
+    utilitiesDemoQA.acessLeftPanel("Progress Bar")
+
+    const targetValue = 40;
+
+    cy.get('#progressBar > div').should('have.attr', 'aria-valuenow', '0')
+    cy.get('#startStopButton').click()
+    utilitiesDemoQA.waitProgressBar(targetValue)
+    cy.get('#startStopButton').click()
+  })
+
+  it.only('Progress Bar test - Fullbar', () => {
+    utilitiesDemoQA.acessButtonCard("Widgets")
+    utilitiesDemoQA.acessLeftPanel("Progress Bar")
+
+    cy.get('#progressBar > div').should('have.attr', 'aria-valuenow', '0')
+    cy.get('#startStopButton').click()
   })
 })

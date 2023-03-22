@@ -28,5 +28,12 @@ class UtilitiesDemoQA{
     clickOnLocator(locator){
         cy.get(locator).click()
     }
+
+    waitProgressBar(targetValue){
+        for(var i = 0; i <= 100; i = i+10){
+            cy.get('#progressBar > div').should('have.attr', 'aria-valuenow', i)
+            if(i == targetValue){i = 100}
+        }
+    }
 }
     export default UtilitiesDemoQA

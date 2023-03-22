@@ -10,6 +10,9 @@
   "author": "victor.machado",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^12.7.0"
+    "chai": "^4.3.7",
+    "cypress": "^12.7.0",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
