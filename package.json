@@ -4,7 +4,8 @@
   "description": "Test project for amazon.com automation test",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "testHttpBinOrg": "mocha"
   },
   "keywords": [],
   "author": "victor.machado",
