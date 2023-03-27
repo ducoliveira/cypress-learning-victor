@@ -63,35 +63,35 @@ describe('HttpBin - HTTP Methods', () => {
     return requestHttpBin
     .get('/get')
     .expect(200)
-  })
+  }).timeout(10000)
 
   // Basic method - POST
   it('POST /post', () => {
     return requestHttpBin
     .post('/post')
     .expect(200)
-  })
+  }).timeout(10000)
 
   // Basic method - DELETE
   it('DELETE /delete', () => {
     return requestHttpBin
     .delete('/delete')
     .expect(200)
-  })
+  }).timeout(10000)
 
   // Basic method - PATCH
   it('PATCH /patch', () => {
     return requestHttpBin
     .patch('/patch')
     .expect(200)
-  })
+  }).timeout(10000)
 
   // Basic method - PUT
   it('PUT /put', () => {
     return requestHttpBin
     .put('/put')
     .expect(200)
-  })
+  }).timeout(10000)
 })
 
 describe('HttpBin - AUTH Methods', () => {
@@ -136,7 +136,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .get(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(5000)
+  }).timeout(15000)
 
   // Status Code Test - POST
   it('POST /status/{code}', () => {
@@ -147,7 +147,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .post(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(5000)
+  }).timeout(10000)
 
   // Status Code Test - DELETE
   it('DELETE /status/{code}', () => {
@@ -158,7 +158,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .delete(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(5000)
+  }).timeout(10000)
 
   // Status Code Test - PATCH
   it('PATCH /status/{code}', () => {
@@ -169,7 +169,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .patch(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(5000)
+  }).timeout(10000)
 
   // Status Code Test - PUT
   it('PUT /status/{code}', () => {
@@ -180,7 +180,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .put(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(5000)
+  }).timeout(10000)
 })
 
 describe('Request Inspection', () => {
@@ -197,7 +197,7 @@ describe('Request Inspection', () => {
   }
 
   // Return the incoming request's HTTP headers
-  it('Headers', () => {
+  it('GET /headers', () => {
     return requestHttpBin
     .get('/headers')
     .expect(200)
@@ -209,10 +209,10 @@ describe('Request Inspection', () => {
       // Assert value from property
       expect(res.body.headers).to.have.property(dataProperty.encoding).that.equals(dataValue.encoding)
     })
-  }).timeout(5000)
+  }).timeout(10000)
 
   // Returns the requester's IP Address.
-  it('IP', () => {
+  it('GET /ip', () => {
     return requestHttpBin
     .get('/ip')
     .expect(200)
@@ -224,10 +224,10 @@ describe('Request Inspection', () => {
       // Assert value from property (for some reason, there is two ip)
       expect(res.body).to.have.property(dataProperty.origin).that.is.oneOf([dataValue.ip1, dataValue.ip2])
     })
-  }).timeout(5000)
+  }).timeout(10000)
 
   // Return the incoming requests's User-Agent header.
-  it('User-Agent', () => {
+  it('GET /user-agent', () => {
     return requestHttpBin
     .get('/user-agent')
     .expect(200)
@@ -239,6 +239,83 @@ describe('Request Inspection', () => {
       // Assert value from property (for some reason, there is two ip)
       expect(res.body).to.have.property(dataProperty.userAgent).that.equals(dataValue.agent)
     })
-  }).timeout(5000)
+  }).timeout(10000)
 
+})
+
+describe('Response Inspection', () => {
+  const dataProperty = {
+    cacheControl: 'cache-control'
+  }
+  const dataValue = {
+    ttl: 10,
+    cacheControl: 'public, max-age=10'
+  }
+
+  // Sets a Cache-Control header for n seconds
+  it('GET /cache/{value} - Store Cache/Value', () => {
+    return requestHttpBin
+    .get(`/cache/${dataValue.ttl}`)
+    .expect(200)
+    .then(function(res){
+      // Assert that exists the cache property
+      assert.property(res.headers, dataProperty.cacheControl)
+      // Assert cache value
+      expect(res.headers).to.have.property(dataProperty.cacheControl).that.equals(dataValue.cacheControl)
+    })
+  }).timeout(15000)
+
+  it('GET /cache/{value} - Return stored Cache/Value', () => {
+    return requestHttpBin
+    .get(`/cache/${dataValue.ttl}`)
+    .expect(200)
+    .then(function(res){
+      // Assert that exists the cache property
+      assert.property(res.headers, dataProperty.cacheControl)
+      // Assert cache value
+      expect(res.headers).to.have.property(dataProperty.cacheControl).that.equals(dataValue.cacheControl)
+      // Send request again before cache timespan end
+      return new Promise(function(resolve){
+        setTimeout(function(){
+          return requestHttpBin
+          .get(`/cache/${dataValue.ttl}`)
+          .expect(200)
+          .then(function(res){
+            // Assert that exists the cache property
+            assert.property(res.headers, dataProperty.cacheControl)
+            // Assert cache value
+            expect(res.headers).to.have.property(dataProperty.cacheControl).that.equals(dataValue.cacheControl)
+            resolve()
+          })
+        }, dataValue.ttl * 1000 / 2) // Send request again after half cache timespan
+      })
+    })
+  }).timeout(15000)
+})
+
+describe('Response Formats', () => {
+  const dataProperty = {
+    slideshow: 'slideshow',
+    slides: 'slides'
+  }
+  const dataValue = {
+    expectedJson: require('./filesapi/slideshow.json'),
+  }
+
+  // Sets a Cache-Control header for n seconds
+  it('GET /json - Read a simple JSON document', async () => {
+    return requestHttpBin
+    .get('/json')
+    .expect(200)
+    .then(function(res){
+      // Assert that its an object
+      expect(res.body).to.be.an('object')
+      // Assert that slideshow property exists
+      expect(res.body).to.have.property(dataProperty.slideshow)
+      // Assert that slides property exists
+      expect(res.body.slideshow).to.have.property(dataProperty.slides)
+      // Assert content from previous json its equal the response
+      expect(res.body.slideshow.slides).to.deep.equal(dataValue.expectedJson)
+    })
+  }).timeout(10000)
 })
