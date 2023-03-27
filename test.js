@@ -4,6 +4,7 @@ const request = require('supertest')('https://jsonplaceholder.typicode.com');
 const requestHttpBin = require('supertest')('https://httpbin.org');
 const assert = require('chai').assert;
 const { expect } = require('chai')
+const fs = require('fs')
 
 describe('JsonPlaceHolder - Users API', () => {
 
@@ -296,13 +297,16 @@ describe('Response Inspection', () => {
 describe('Response Formats', () => {
   const dataProperty = {
     slideshow: 'slideshow',
-    slides: 'slides'
+    slides: 'slides',
+    deflate: 'deflated'
   }
   const dataValue = {
     expectedJson: require('./filesapi/slideshow.json'),
+    deflate: true,
+    allowedRobot: fs.readFileSync('./filesapi/allowedRobot.txt', 'utf8'),
+    deniedRobot: fs.readFileSync('./filesapi/deniedRobot.txt', 'utf8')
   }
 
-  // Sets a Cache-Control header for n seconds
   it('GET /json - Read a simple JSON document', async () => {
     return requestHttpBin
     .get('/json')
@@ -316,6 +320,54 @@ describe('Response Formats', () => {
       expect(res.body.slideshow).to.have.property(dataProperty.slides)
       // Assert content from previous json its equal the response
       expect(res.body.slideshow.slides).to.deep.equal(dataValue.expectedJson)
+    })
+  }).timeout(10000)
+
+  it('GET /deflate - Returns Deflate-encoded data.', async () => {
+    return requestHttpBin
+    .get('/deflate')
+    .expect(200)
+    .then(function(res){
+      // Assert that exists a body and it's not empty
+      assert.isNotEmpty(res.body)
+      // Assert that exists deflate property
+      assert.property(res.body, dataProperty.deflate)
+      // Assert that deflate is true
+      expect(res.body).to.have.property(dataProperty.deflate).that.equals(dataValue.deflate)
+    })
+  }).timeout(10000)
+
+  it('GET /robots.txt - Returns some robots.txt rules.', async () => {
+    return requestHttpBin
+    .get('/robots.txt')
+    .expect(200)
+    .expect('Content-Type', 'text/plain')
+    .then(function(res){
+      // Assert that exists a text and it's not empty
+      assert.isNotEmpty(res.text)
+      // Assert that the response text its the same as provided in the test
+      expect(res.text).to.deep.equal(dataValue.allowedRobot)
+      // Should have necessary directives
+      assert.include(dataValue.allowedRobot, 'User-agent: *')
+      assert.include(dataValue.allowedRobot, 'Disallow:')
+      // Shouldn't have thoses directives
+      assert.notInclude(dataValue.allowedRobot, 'Disallow: /\n')
+      assert.notInclude(dataValue.allowedRobot, 'User-agent: BadBot')
+    })
+  }).timeout(10000)
+
+  it('GET /deny - Returns page denied by robots.txt rules.', async () => {
+    return requestHttpBin
+    .get('/deny')
+    .expect(200)
+    .expect('Content-Type', 'text/plain')
+    .then(function(res){
+      // Assert that exists a text and it's not empty
+      assert.isNotEmpty(res.text)
+      // Assert that the response text its the same as provided in the test
+      expect(res.text).to.deep.equal(dataValue.deniedRobot)
+      // Should have text included
+      assert.include(dataValue.deniedRobot, `YOU SHOULDN'T BE HERE`)
     })
   }).timeout(10000)
 })
