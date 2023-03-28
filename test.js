@@ -371,3 +371,77 @@ describe('Response Formats', () => {
     })
   }).timeout(10000)
 })
+
+describe('Dynamic data', () => {
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+  const dataValue = {
+    originalValue: 'SFRUUEJJTiBpcyBhd2Vzb21l',
+    anyOtherValue: 'anyOtherValue'
+  }
+
+  // Test base64 with an valid value 
+  it('GET /base64/{value} - Decodes base64url-encoded - Valid Value', async () => {
+    return requestHttpBin
+    .get(`/base64/${dataValue.originalValue}`)
+    .expect(200)
+    .then(function(res){
+      // Assert the text with the correct value
+      expect(res.text).to.deep.equal('HTTPBIN is awesome')
+    })
+  }).timeout(10000)
+
+  // Test base64 with an invalid value 
+  it('GET /base64/{value} - Decodes base64url-encoded - Invalid Value', async () => {
+    return requestHttpBin
+    .get(`/base64/${dataValue.anyOtherValue}`)
+    .expect(200)
+    .then(function(res){
+      // Assert the text with the incorrect value
+      expect(res.text).to.deep.equal('Incorrect Base64 data try: SFRUUEJJTiBpcyBhd2Vzb21l')
+    })
+  }).timeout(10000)
+
+  // Return an UUID4 and assert if its valid
+  it('GET /uuid - Return a UUID4', async () => {
+    return requestHttpBin
+    .get(`/uuid`)
+    .expect(200)
+    .then(function(res){
+      // Assert its in 8-4-4-4-12 format
+      assert.match(res.body.uuid, uuidRegex)
+      // Assert its UUID version 4
+      const version = res.body.uuid.charAt(14)
+      assert.equal(version, '4')
+    })
+  }).timeout(10000)
+})
+
+describe('Cookies', () => {
+  const dataValue = {
+    cookieValue: 'luanAlmeida'
+  }
+
+  // Sets cookie(s) as provided by the query string and redirects to cookie list.
+  it('GET /cookies/set - Set cookie(s)', function() {
+    return requestHttpBin
+    .get(`/cookies/set`)
+    .query({nomeDoUsuario: dataValue.cookieValue})
+    .expect(302)
+    .then(function(res){
+      assert.equal(res.header['set-cookie'][0],
+       `nomeDoUsuario=${dataValue.cookieValue}; Path=/`)
+    })
+  }).timeout(10000)
+
+  // Returns cookie data (couldn`t retrieve data from previously test block)
+  it('GET /cookies - Returns cookie(s) data setted previously', function() {
+    return requestHttpBin
+    .get(`/cookies`)
+    .set('Cookie', `nomeDoUsuario=${dataValue.cookieValue}`)
+    .expect(200)
+    .then(function(res){
+      assert.property(res.body.cookies, 'nomeDoUsuario')
+      assert.equal(res.body.cookies.nomeDoUsuario, dataValue.cookieValue)
+    })
+  }).timeout(10000)
+})
