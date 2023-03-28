@@ -489,3 +489,17 @@ describe('Images', () => {
     })
   }).timeout(100000)
 })
+
+describe('Redirect', () => {
+  const targetUrl = 'https://www.google.com/'
+
+  // 302/3XX Redirects to the given URL.
+  it('GET /redirect-to - ', function() {
+    return requestHttpBin
+    .get(`/redirect-to?url=${targetUrl}`)
+    .expect(302)
+    .then(function(res){
+      assert.equal(res.header['location'], targetUrl)
+    })
+  }).timeout(100000)
+})
