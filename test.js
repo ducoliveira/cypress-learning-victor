@@ -445,3 +445,47 @@ describe('Cookies', () => {
     })
   }).timeout(10000)
 })
+
+describe('Images', () => {
+  const dataValue = {
+    cType: 'content-type',
+    cLength: 'content-length',
+    png: 'image/png',
+    jpeg: 'image/jpeg',
+    svg: 'image/svg',
+    webp: 'image/webp',
+  }
+
+  // Returns a simple image of the type suggest by the Accept header.
+  it('GET /image - Return a PNG image', function() {
+    return requestHttpBin
+    .get(`/image`)
+    .expect(200)
+    .then(function(res){
+      // Assert that property content type exists
+      assert.property(res.header, dataValue.cType)
+      // Assert what content type the image is (in this case, png)
+      assert.equal(res.header[dataValue.cType], dataValue.png)
+      // Assert that the image has the same length in the header
+      assert.equal(res.body.length, res.header[dataValue.cLength])
+    })
+  }).timeout(100000)
+
+  // Returns a simple image from any imageType (jpeg, png, svg and webp)
+  it('GET /image - Return a selected type image', function() {
+    const imageType = 'png'
+    const imageTypeValue = 'image/'+imageType
+
+    return requestHttpBin
+    .get(`/image/${imageType}`)
+    .expect(200)
+    .then(function(res){
+      // Assert that property content type exists
+      assert.property(res.header, dataValue.cType)
+      // Assert what content type the image is
+      assert.equal(res.header[dataValue.cType], imageTypeValue)
+      // Assert that the image has the same length in the header
+      assert.equal(res.body.length, res.header[dataValue.cLength])
+    })
+  }).timeout(100000)
+})
