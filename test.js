@@ -2,6 +2,7 @@
 
 const request = require('supertest')('https://jsonplaceholder.typicode.com');
 const requestHttpBin = require('supertest')('https://httpbin.org');
+const requestDemoQA = require('supertest')('https://demoqa.com')
 const assert = require('chai').assert;
 const { expect } = require('chai')
 const fs = require('fs')
@@ -502,4 +503,78 @@ describe('Redirect', () => {
       assert.equal(res.header['location'], targetUrl)
     })
   }).timeout(100000)
+})
+
+describe.only('Book Store API', () => {
+  const userData = {
+    userName: 'luanalmeida',
+    password: '10Fev1955*'
+  }
+  const invalidUserData = {
+    userName: 'teste',
+    password: 'teste'
+  }
+
+  before(async function(){
+    // API authentication to get valid access token
+    const response = await requestDemoQA
+    .post('/Account/v1/GenerateToken')
+    .send(userData)
+    // Store token for tests
+    token = response.body.token
+  })
+
+  it('User Authentication - Valid User', function(){
+    return requestDemoQA
+    .post(`/Account/v1/Authorized`)
+    .send(userData)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .expect(200) // Assert status code OK
+  }).timeout(50000)
+
+  it('User Authentication - Invalid User', function(){
+    return requestDemoQA
+    .post(`/Account/v1/Authorized`)
+    .send(invalidUserData)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .expect(404) // Assert status code NOT FOUND
+  }).timeout(50000)
+
+  it('Generate Token - Valid User', function(){
+    return requestDemoQA
+    .post(`/Account/v1/GenerateToken`)
+    .send(userData)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .expect(200)
+    .then(function(res){
+      // Assert that token exists
+      assert.exists(res.body.token)
+      // Assert that token has time to expires
+      assert.exists(res.body.expires)
+      // Assert that the request was successful
+      assert.equal(res.body.status, 'Success')
+      assert.equal(res.body.result, 'User authorized successfully.')
+    })
+  }).timeout(50000)
+
+  it('Generate Token - Invalid User', function(){
+    return requestDemoQA
+    .post(`/Account/v1/GenerateToken`)
+    .send(invalidUserData)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .expect(200)
+    .then(function(res){
+      // Assert that token doesn`t exists
+      assert.notExists(res.body.token)
+      // Assert that token expires time doesn`t exists
+      assert.notExists(res.body.expires)
+      // Assert that request failed
+      assert.equal(res.body.status, 'Failed')
+      assert.equal(res.body.result, 'User authorization failed.')
+    })
+  }).timeout(50000)
 })
