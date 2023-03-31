@@ -17,7 +17,7 @@ describe('JsonPlaceHolder - Users API', () => {
     .then((res) => {
       assert.isNotEmpty(res.body)
     })
-  })
+  }).timeout(15000)
 
   // Make a POST request to the users route
   it('POST /users', () => {
@@ -33,7 +33,7 @@ describe('JsonPlaceHolder - Users API', () => {
       assert.equal(res.body.name, data.name)
       assert.equal(res.body.email, data.email)
     })
-  })
+  }).timeout(15000)
 
   // Make a PUT request to the users route within User 1
   it('PUT /users/:id', () => {
@@ -46,7 +46,7 @@ describe('JsonPlaceHolder - Users API', () => {
     .then((res) => {
       assert.equal(res.body.email, data.email)
     })
-  })
+  }).timeout(15000)
 
   // Make a DELETE request to the users route within User 1
   it('DELETE /users/:id', () => {
@@ -55,7 +55,7 @@ describe('JsonPlaceHolder - Users API', () => {
     .then((res) => {
       assert.isEmpty(res.body)
     })
-  })
+  }).timeout(15000)
 })
 
 describe('HttpBin - HTTP Methods', () => {
@@ -149,7 +149,7 @@ describe('Status Code', () => {
     return requestHttpBin
     .post(`/status/${data.code}`)
     .expect(data.code)
-  }).timeout(10000)
+  }).timeout(15000)
 
   // Status Code Test - DELETE
   it('DELETE /status/{code}', () => {
@@ -305,7 +305,7 @@ describe('Response Formats', () => {
     expectedJson: require('./filesapi/slideshow.json'),
     deflate: true,
     allowedRobot: fs.readFileSync('./filesapi/allowedRobot.txt', 'utf8'),
-    deniedRobot: fs.readFileSync('./filesapi/deniedRobot.txt', 'utf8')
+    deniedRobot: fs.readFileSync('./filesapi/deniedRobot.txt', 'utf8'),
   }
 
   it('GET /json - Read a simple JSON document', async () => {
@@ -505,24 +505,16 @@ describe('Redirect', () => {
   }).timeout(100000)
 })
 
-describe.only('Book Store API', () => {
+describe('Book Store API', () => {
   const userData = {
     userName: 'luanalmeida',
-    password: '10Fev1955*'
+    password: '10Fev1955*',
+    userId: '2468e859-0956-474b-a0a3-75a023b7f209'
   }
   const invalidUserData = {
     userName: 'teste',
     password: 'teste'
   }
-
-  before(async function(){
-    // API authentication to get valid access token
-    const response = await requestDemoQA
-    .post('/Account/v1/GenerateToken')
-    .send(userData)
-    // Store token for tests
-    token = response.body.token
-  })
 
   it('User Authentication - Valid User', function(){
     return requestDemoQA
@@ -577,4 +569,61 @@ describe.only('Book Store API', () => {
       assert.equal(res.body.result, 'User authorization failed.')
     })
   }).timeout(50000)
+
+  it('User Login - Valid User', function(){
+    return requestDemoQA
+    .post(`/Account/v1/Login`)
+    .send(userData)
+    .expect(200) // Assert status code OK
+    .then(function(res){
+      assert.equal(res.body.username, userData.userName)
+      assert.equal(res.body.password, userData.password)
+      assert.equal(res.body.userId, userData.userId)
+    })
+  }).timeout(50000)
+
+  it('GET List of Books', function(){
+    return requestDemoQA
+    .get('/BookStore/v1/Books')
+    .set('Accept', 'application/json')
+    .then(function(res){
+
+      /////// Create a json file with all books
+      // fs.writeFile('./filesapi/bookshelf.json', JSON.stringify(res.body), function(err){
+      //   if (err) throw err;
+      //   console.log('Arquivo salvo com sucesso!')
+      // })
+      ///////
+
+      // Read the stored JSON file and assert are equal
+      fs.readFile('./filesapi/bookshelf.json', function (err, data){
+        if (err) throw err
+
+        const expectedBooks = JSON.parse(data)
+        assert.deepEqual(res.body, expectedBooks)
+      })
+
+      // Assert how many books exists
+      assert.lengthOf(res.body.books, 8)
+      // Assert title of the second book
+      assert.equal(res.body.books[1].title, 'Learning JavaScript Design Patterns')
+    })
+  }).timeout(5000)
+
+  it('GET a specific book by ISBN', function(){
+    const dataValue = {
+      ISBN: '9781593277574'
+    }
+    return requestDemoQA
+    .get(`/BookStore/v1/Book?ISBN=${dataValue.ISBN}`)
+    .expect(200)
+    .then(function(res){
+      // Asserting book content: ISBN, Title and Author
+      assert.equal(res.body.isbn, dataValue.ISBN)
+      assert.exists(res.body.title)
+      assert.exists(res.body.author)
+    })
+  }).timeout(5000)
+
+
 })
